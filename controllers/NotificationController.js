@@ -2,14 +2,6 @@ const admin = require('firebase-admin');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
 
-// Initialize Firebase Admin if not already initialized
-if (!admin.apps.length) {
-  const serviceAccount = require('../config/firebase-service-account.json');
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    projectId: process.env.FIREBASE_PROJECT_ID
-  });
-}
 
 const getNotifications = async (req, res) => {
   const userId = req.params.userId;
