@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+      <loc>https://www.sraws.com/</loc>
+      <lastmod>2024-10-30</lastmod>
+      <changefreq>daily</changefreq>
+      <priority>1.00</priority>
+   </url>
+   <url>
+      <loc>https://www.sraws.com/Search-for-Users</loc>
+      <lastmod>2024-10-30</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.80</priority>
+   </url>
+   <url>
+      <loc>https://www.sraws.com/About</loc>
+      <lastmod>2024-10-30</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.80</priority>
+   </url>
+   <url>
+      <loc>https://www.sraws.com/Help</loc>
+      <lastmod>2024-10-30</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.70</priority>
+   </url>
+   <url>
+      <loc>https://www.sraws.com/privacy-policy</loc>
+      <lastmod>2024-10-30</lastmod>
+      <changefreq>yearly</changefreq>
+      <priority>0.50</priority>
+   </url>
+   <url>
+      <loc>https://www.sraws.com/terms-of-service</loc>
+      <lastmod>2024-10-30</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.70</priority>
+   </url>
+   <url>
+      <loc>https://www.sraws.com/cookie-policy</loc>
+      <lastmod>2024-10-30</lastmod>
+      <changefreq>yearly</changefreq>
+      <priority>0.50</priority>
+   </url>
+   <url>
+      <loc>https://www.sraws.com/community-corner</loc>
+      <lastmod>2024-10-30</lastmod>
+      <changefreq>yearly</changefreq>
+      <priority>0.60</priority>
+   </url>
+   
+</urlset>

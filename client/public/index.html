@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#000000" />
+
+  <title>Sraws - Scam Reporting & Alert Platform</title>
+  
+  <meta name="title" content="Sraws - Scam Reporting & Alert Platform">
+  <meta name="description" content="Post and comment platform for Sraws">
+  <meta name="keywords" content="Sraws, post, comment, platform, social media, community">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sraws.com">
+  <meta property="og:title" content="Sraws - Scam Reporting & Alert Platform">
+  <meta property="og:description" content="Post and comment platform for Sraws">
+  <meta property="og:image" content="https://media.sraws.com/media/manu_1226/Webpage_sraws.com_66fcdfd17a474.jpeg">
+  <meta property="og:image:alt" content="Sraws Platform">
+  <meta property="og:site_name" content="Sraws">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://sraws.com">
+  <meta property="twitter:title" content="Sraws - Scam Reporting & Alert Platform">
+  <meta property="twitter:description" content="Post and comment platform for Sraws">
+  <meta property="twitter:image" content="https://media.sraws.com/media/manu_1226/Webpage_sraws.com_66fcdfd17a474.jpeg">
+  <meta property="twitter:image:alt" content="Sraws Platform">
+  <meta name="google-adsense-account" content="ca-pub-3353396572720680">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Sraws",
+      "url": "https://sraws.com",
+      "description": "Post and comment platform for Sraws",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Sraws"
+      }
+    }
+  </script>
+
+  <!-- Analytics and Tracking -->
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-3ZF4WZ3BE5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    const gtag = (...args) => dataLayer.push(args);
+    gtag('js', new Date());
+    gtag('config', 'G-3ZF4WZ3BE5');
+  </script>
+  <!-- End Google tag -->
+
+  <!-- Manifest and Favicon -->
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" type="image/png" href="/srawslogo.png" sizes="32x32 64x64">
+  <link rel="icon" type="image/svg+xml" href="/srawslogo.svg" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
+  <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="/favicon-48x48.png" sizes="48x48">
+  
+  <!-- Canonical Link -->
+  <link rel="canonical" href="https://sraws.com" />
+
+  <!-- Robots Meta Tag -->
+  <meta name="robots" content="index, follow" />
+
+  <!-- CSS for Modern Cookie Dialog and Updated Banner -->
+  <style>
+    :root {
+      --primary-color: #1e90ff;
+      --primary-hover: #1c86ee;
+      --secondary-color: #ffffff;
+      --text-color: #333333;
+      --background-color: #f0f8ff;
+      --shadow-color: rgba(0, 0, 0, 0.2);
+      --transition-speed: 0.3s;
+      --border-radius: 10px;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    /* Overlay Background */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 999;
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .overlay.show {
+      display: block;
+    }
+
+    /* Cookie Dialog Styles */
+    .cookie-dialog, .banner {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 500px;
+      background: var(--secondary-color);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      box-shadow: 0 4px 12px var(--shadow-color);
+      z-index: 1000;
+      text-align: center;
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .cookie-dialog.show, .banner.show {
+      display: block;
+    }
+
+    .cookie-icon, .banner img {
+      font-size: 50px;
+      margin-bottom: 20px;
+      color: #ffa500;
+    }
+
+    .banner img {
+      max-width: 150px;
+      margin-bottom: 20px;
+    }
+
+    .banner h2 {
+      margin: 10px 0;
+      font-size: 28px;
+      color: var(--primary-color);
+    }
+
+    .banner p {
+      margin: 10px 0;
+      font-size: 18px;
+      color: var(--text-color);
+      line-height: 1.5;
+    }
+
+    .banner a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: bold;
+      transition: color var(--transition-speed);
+    }
+
+    .banner a:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    /* Button Styles */
+    .cookie-btn, .banner-btn {
+      background-color: var(--primary-color);
+      color: var(--secondary-color);
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: var(--border-radius);
+      transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
+      margin: 10px 5px;
+      box-shadow: 0 4px 10px rgba(30, 144, 255, 0.4);
+    }
+
+    .cookie-btn:hover, .banner-btn:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(30, 144, 255, 0.6);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 600px) {
+      .cookie-dialog, .banner {
+        width: 95%;
+        padding: 20px;
+      }
+
+      .cookie-btn, .banner-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+
+      .banner h2 {
+        font-size: 24px;
+      }
+
+      .banner p {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root" role="main" aria-live="polite"></div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay"></div>
+
+  <!-- Cookie Dialog HTML -->
+  <div class="cookie-dialog" id="cookie-dialog" aria-labelledby="cookie-title" role="dialog" aria-modal="true">
+    <div class="cookie-icon" aria-hidden="true">🍪</div>
+    <h2 id="cookie-title">We Value Your Privacy</h2>
+    <p>
+      We use cookies to ensure that we give you the best experience on our website. By continuing, you agree to our use of cookies. 
+      <a href="/cookie-policy" target="_blank" rel="noopener">Learn more</a>
+    </p>
+    <button class="cookie-btn" id="accept-cookies">Accept</button>
+    <button class="cookie-btn" id="reject-cookies">Reject</button>
+  </div>
+
+  <!-- Updated Big Banner -->
+  <div class="banner" id="login-banner" aria-labelledby="banner-title" role="dialog" aria-modal="true">
+    <img src="/srawsmainlogo.png" alt="Sraws Logo" class="banner-logo" />
+    <h2 id="banner-title">Welcome to Sraws!</h2>
+    <p class="banner-description">
+      Your platform for reporting scams and safeguarding your community. 
+      <br>Join us in the fight against fraud—<strong>every post matters!</strong>
+    </p>
+    <p>
+      Ready to take action? <a href="/login">Login</a> to your account or <a href="/signup">create a new account</a> to get started!
+    </p>
+    <div class="banner-actions">
+      <button class="banner-btn" id="banner-login">Login</button>
+      <button class="banner-btn" id="banner-signup">Sign Up</button>
+    </div>
+    <div class="banner-footer">
+      <p>By using our platform, you agree to our <a href="/terms" target="_blank" rel="noopener">Terms of Service</a>.</p>
+    </div>
+  </div>
+
+  <!-- JavaScript for Cookie Dialog and Banner -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const cookieDialog = document.getElementById('cookie-dialog');
+      const overlay = document.getElementById('overlay');
+      const acceptBtn = document.getElementById('accept-cookies');
+      const rejectBtn = document.getElementById('reject-cookies');
+      const loginBanner = document.getElementById('login-banner');
+      const bannerLoginBtn = document.getElementById('banner-login');
+      const bannerSignupBtn = document.getElementById('banner-signup');
+
+      // Function to check if cookies are enabled
+      const areCookiesEnabled = () => navigator.cookieEnabled;
+
+      // Show Cookie Dialog
+      const showCookieDialog = () => {
+        if (areCookiesEnabled() && !localStorage.getItem('cookiesAccepted')) {
+          cookieDialog.classList.add('show');
+          overlay.classList.add('show');
+        }
+      };
+
+      // Hide Cookie Dialog
+      const hideCookieDialog = () => {
+        cookieDialog.classList.remove('show');
+        overlay.classList.remove('show');
+      };
+
+      // Accept Cookies
+      const acceptCookies = () => {
+        localStorage.setItem('cookiesAccepted', 'true');
+        hideCookieDialog();
+      };
+
+      // Reject Cookies
+      const rejectCookies = () => {
+        hideCookieDialog();
+        // Reappear after 1 minute
+        setTimeout(showCookieDialog, 60000);
+      };
+
+      // Redirect Functions with Error Handling
+      const redirectTo = (url) => {
+        try {
+          window.location.href = url;
+        } catch (error) {
+          console.error(`Redirection to ${url} failed:`, error);
+        }
+      };
+
+      const redirectToLogin = () => redirectTo('/login');
+      const redirectToSignup = () => redirectTo('/signup');
+
+      // Show Login Banner if user is not logged in
+      const showLoginBanner = () => {
+        if (!localStorage.getItem('user')) { // Update according to your authentication logic
+          loginBanner.classList.add('show');
+        }
+      };
+
+      // Hide Login Banner
+      const hideLoginBanner = () => {
+        loginBanner.classList.remove('show');
+      };
+
+      // Event Listeners
+      acceptBtn.addEventListener('click', acceptCookies);
+      rejectBtn.addEventListener('click', rejectCookies);
+      bannerLoginBtn.addEventListener('click', redirectToLogin);
+      bannerSignupBtn.addEventListener('click', redirectToSignup);
+
+      // Initial Load Conditions
+      if (window.location.pathname === '/') {
+        showCookieDialog();
+        // Check login status after 1 minute
+        setTimeout(showLoginBanner, 60000); // 1 minute delay
+      }
+
+      // Handle Navigation Events
+      const handleNavigation = () => {
+        if (window.location.pathname !== '/') {
+          hideLoginBanner();
+        } else {
+          showLoginBanner();
+        }
+      };
+
+      window.addEventListener('popstate', handleNavigation);
+      window.addEventListener('pushState', handleNavigation);
+      window.addEventListener('replaceState', handleNavigation);
+
+      // Optional: Monitor AJAX navigation if using a frontend framework
+      // Example for React Router or similar:
+      // const originalPushState = history.pushState;
+      // history.pushState = function(...args) {
+      //   originalPushState.apply(history, args);
+      //   handleNavigation();
+      // };
+    });
+  </script>
+</body>
+</html>
