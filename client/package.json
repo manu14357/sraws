@@ -21,7 +21,7 @@
     "date-fns": "^3.6.0",
     "draft-js": "^0.11.7",
     "emoji-picker-react": "^4.11.1",
-    "firebase": "^11.1.0",
+    "firebase": "^11.6.0",
     "firebase-admin": "^13.0.2",
     "formik": "^2.2.9",
     "framer-motion": "^11.11.1",
@@ -94,5 +94,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://api.sraws.com:4000"
+  "proxy": "http://localhost:4000"
 }

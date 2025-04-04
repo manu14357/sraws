@@ -6,7 +6,6 @@ import {
   Stack,
   TextField,
   Typography,
-  CircularProgress,
   IconButton,
   LinearProgress,
   Box,
@@ -14,14 +13,15 @@ import {
 } from "@mui/material";
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import ErrorAlert from "./ErrorAlert";
 import { isLoggedIn } from "../helpers/authHelper";
 import HorizontalStack from "./util/HorizontalStack";
 import UserAvatar from "./UserAvatar";
-import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
-import CloseIcon from '@mui/icons-material/Close';
-import { useDropzone } from 'react-dropzone'; // For drag-and-drop functionality
+import InsertPhotoIcon from "@mui/icons-material/InsertPhoto";
+import CloseIcon from "@mui/icons-material/Close";
+import { useDropzone } from "react-dropzone"; // For drag-and-drop functionality
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { storage } from "./firebase"; // Adjust the path to your firebase.js file
 
 // Define constants for maximum file size and autosave interval
 const MAX_FILE_SIZE_MB = 20;
@@ -35,7 +35,7 @@ const PostEditor = () => {
   const [uploadComplete, setUploadComplete] = useState(false); // Flag to indicate upload completion
   const [formData, setFormData] = useState({
     title: "",
-    content: "", // Now using plain text
+    content: "",
     country: "",
     state: "",
     city: "",
@@ -47,13 +47,13 @@ const PostEditor = () => {
   const [serverError, setServerError] = useState(""); // Server-side error messages
   const [errors, setErrors] = useState({}); // Client-side validation errors
   const [draftSaved, setDraftSaved] = useState(false); // For autosave notification
-  const user = isLoggedIn(); // Check if the user is logged in
+  const user = isLoggedIn(); // Check if the user is logged in (optional)
 
   /**
    * Load draft from localStorage on component mount
    */
   useEffect(() => {
-    const savedDraft = localStorage.getItem('postEditorDraft');
+    const savedDraft = localStorage.getItem("postEditorDraft");
     if (savedDraft) {
       setFormData(JSON.parse(savedDraft));
     }
@@ -64,26 +64,13 @@ const PostEditor = () => {
    */
   useEffect(() => {
     const autosave = setInterval(() => {
-      localStorage.setItem('postEditorDraft', JSON.stringify(formData));
+      localStorage.setItem("postEditorDraft", JSON.stringify(formData));
       setDraftSaved(true);
       setTimeout(() => setDraftSaved(false), 2000); // Hide notification after 2 seconds
     }, AUTOSAVE_INTERVAL_MS);
 
     return () => clearInterval(autosave); // Cleanup on unmount
   }, [formData]);
-
-  /**
-   * Handle changes in media file input
-   * @param {Event} e - The change event from the file input
-   */
-  const handleMediaChange = (e) => {
-    const files = e.target.files;
-    // Update state with selected media files
-    setFormData((prevData) => ({
-      ...prevData,
-      mediaFiles: Array.from(files),
-    }));
-  };
 
   /**
    * Validate form data
@@ -97,13 +84,12 @@ const PostEditor = () => {
     } else if (data.title.length > 80) {
       errors.title = "Title should not exceed 80 characters";
     }
-    if (!data.content.trim()) { // Check for empty content
+    if (!data.content.trim()) {
       errors.content = "Content is required";
     }
     if (!data.country) {
       errors.country = "Country is required";
     }
-
     return errors;
   };
 
@@ -137,43 +123,52 @@ const PostEditor = () => {
    * Handle media file additions via drag-and-drop or file input
    * @param {Array} acceptedFiles - An array of accepted File objects
    */
-  const onDrop = useCallback((acceptedFiles) => {
-    acceptedFiles.forEach(file => {
-      // Check for file size
-      if (file.size > MAX_FILE_SIZE_BYTES) {
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      acceptedFiles.forEach((file) => {
+        // Check for file size
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          setFormData((prevData) => ({
+            ...prevData,
+            mediaError: `File ${file.name} exceeds ${MAX_FILE_SIZE_MB} MB.`,
+          }));
+          return;
+        }
+
+        // Check for maximum number of files
+        if (formData.mediaFiles.length >= 3) {
+          setFormData((prevData) => ({
+            ...prevData,
+            mediaError: "You can upload a maximum of 3 files.",
+          }));
+          return;
+        }
+
+        // Generate a preview URL for the file
+        const previewUrl = URL.createObjectURL(file);
+        const type = file.type.startsWith("video")
+          ? "video"
+          : file.type.startsWith("audio")
+          ? "audio"
+          : "image";
+
+        // Update state with the new file and its preview
         setFormData((prevData) => ({
           ...prevData,
-          mediaError: `File ${file.name} exceeds ${MAX_FILE_SIZE_MB} MB.`,
+          mediaFiles: [...prevData.mediaFiles, file],
+          mediaPreviews: [...prevData.mediaPreviews, { file, previewUrl, type }],
+          mediaError: "",
         }));
-        return;
-      }
-
-      // Check for maximum number of files
-      if (formData.mediaFiles.length >= 3) {
-        setFormData((prevData) => ({
-          ...prevData,
-          mediaError: "You can upload a maximum of 3 files.",
-        }));
-        return;
-      }
-
-      // Generate a preview URL for the file
-      const previewUrl = URL.createObjectURL(file);
-      const type = file.type.startsWith('video') ? 'video' :
-                   file.type.startsWith('audio') ? 'audio' : 'image';
-
-      // Update state with the new file and its preview
-      setFormData((prevData) => ({
-        ...prevData,
-        mediaFiles: [...prevData.mediaFiles, file],
-        mediaPreviews: [...prevData.mediaPreviews, { file, previewUrl, type }],
-        mediaError: "",
-      }));
-    });
-  }, [formData.mediaFiles]);
+      });
+    },
+    [formData.mediaFiles]
+  );
 
   // Initialize react-dropzone
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: 'image/*,video/*,audio/*' });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: "image/*,video/*,audio/*",
+  });
 
   /**
    * Handle removal of a media file
@@ -192,6 +187,64 @@ const PostEditor = () => {
     });
     setUploadProgress(0);
     setUploadComplete(false);
+  };
+
+  /**
+   * Upload media files to Firebase Storage and return their URLs
+   * @param {Array} files - An array of File objects to upload
+   * @returns {Array} mediaUrls - An array of uploaded media URLs
+   */
+  const uploadMediaFiles = async (files) => {
+    const mediaUrls = [];
+
+    if (!files || files.length === 0) {
+      setUploadComplete(true);
+      return mediaUrls;
+    }
+
+    try {
+      const uploadPromises = files.map((file) => {
+        // Generate a unique identifier (e.g., timestamp + random string)
+        const uniqueId = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+        // Extract the file extension
+        const fileExtension = file.name.split(".").pop();
+        // Create a unique filename (e.g., originalname_timestamp_random.ext)
+        const uniqueFileName = `${file.name.split(".")[0]}_${uniqueId}.${fileExtension}`;
+        // Use 'anonymous' as username if no user is logged in, or use user.username
+        const username = user && user.username ? user.username : "anonymous";
+        const filePath = `media/${username}/${uniqueFileName}`;
+
+        const storageRef = ref(storage, filePath);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        return new Promise((resolve, reject) => {
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              const percentCompleted = Math.round(
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+              );
+              setUploadProgress(percentCompleted);
+            },
+            (error) => {
+              console.error("Error uploading file:", error);
+              reject(error);
+            },
+            async () => {
+              const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+              resolve(downloadURL);
+            }
+          );
+        });
+      });
+
+      mediaUrls.push(...(await Promise.all(uploadPromises)));
+    } catch (error) {
+      console.error("Error uploading media to Firebase:", error);
+    }
+
+    setUploadComplete(true);
+    return mediaUrls;
   };
 
   /**
@@ -214,10 +267,13 @@ const PostEditor = () => {
     const mediaUrls = await uploadMediaFiles(formData.mediaFiles);
 
     // Create post with form data and media URLs
-    const data = await createPost({
-      ...formData,
-      mediaUrls
-    }, user);
+    const data = await createPost(
+      {
+        ...formData,
+        mediaUrls,
+      },
+      user
+    ); // Pass user if required by createPost, otherwise remove it
 
     setLoading(false);
 
@@ -225,53 +281,14 @@ const PostEditor = () => {
       setServerError(data.error);
     } else {
       // Clear draft from localStorage upon successful submission
-      localStorage.removeItem('postEditorDraft');
+      localStorage.removeItem("postEditorDraft");
       const editedParam = data.edited ? "true" : "false";
       navigate(`/posts/${data.slug}/${data._id}?edited=${editedParam}`);
     }
   };
 
   /**
-   * Upload media files to the server and return their URLs
-   * @param {Array} files - An array of File objects to upload
-   * @returns {Array} mediaUrls - An array of uploaded media URLs
-   */
-  const uploadMediaFiles = async (files) => {
-    const mediaUrls = [];
-    const formDataObj = new FormData();
-
-    formDataObj.append("username", user.username); // Append username to form data
-
-    files.forEach(file => {
-      formDataObj.append("media[]", file); // Append each file
-    });
-
-    try {
-      const response = await axios.post('https://media.sraws.com/upload.php', formDataObj, {
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          setUploadProgress(percentCompleted);
-        }
-      });
-
-      if (response.data && response.data.length > 0) {
-        response.data.forEach(item => {
-          if (item.url) {
-            mediaUrls.push(item.url);
-          } else if (item.error) {
-            console.error("Upload error:", item.error);
-          }
-        });
-      }
-    } catch (error) {
-      console.error("Error uploading media:", error);
-    }
-    setUploadComplete(true);
-    return mediaUrls;
-  };
-
-  /**
-   * Fetch user's geolocation on component mount
+   * Fetch user's geolocation on component mount (optional)
    */
   useEffect(() => {
     if (navigator.geolocation) {
@@ -285,19 +302,12 @@ const PostEditor = () => {
     }
   }, []);
 
-  /**
-   * Callback on successful geolocation
-   * @param {Position} position - The geolocation position object
-   */
   const showPosition = async (position) => {
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
 
     try {
-      // Fetch location data based on latitude and longitude
       const locationInfo = await fetchLocation(lat, lon);
-
-      // Update form data with fetched location details
       setFormData((prevData) => ({
         ...prevData,
         country: locationInfo.country,
@@ -305,14 +315,10 @@ const PostEditor = () => {
         city: locationInfo.city,
       }));
     } catch (error) {
-      console.error('Error fetching address:', error);
+      console.error("Error fetching address:", error);
     }
   };
 
-  /**
-   * Callback on geolocation error
-   * @param {PositionError} error - The geolocation error object
-   */
   const showError = (error) => {
     switch (error.code) {
       case error.PERMISSION_DENIED:
@@ -333,17 +339,10 @@ const PostEditor = () => {
     }
   };
 
-  /**
-   * Mock API function to fetch location data based on latitude and longitude
-   * @param {number} lat - Latitude
-   * @param {number} lon - Longitude
-   * @returns {Object} locationInfo - An object containing country, state, and city
-   */
   const fetchLocation = async (lat, lon) => {
-    // Mock API endpoint to fetch location data based on lat and lon
     const response = await fetch(`https://api.sraws.com/geolocation?lat=${lat}&lon=${lon}`);
     if (!response.ok) {
-      throw new Error('Failed to fetch location data.');
+      throw new Error("Failed to fetch location data.");
     }
     return await response.json();
   };
@@ -351,7 +350,7 @@ const PostEditor = () => {
   return (
     <Card>
       <Stack spacing={2} sx={{ p: 2 }}>
-        {/* Display user information if logged in */}
+        {/* Display user information if logged in (optional) */}
         {user && (
           <HorizontalStack spacing={2}>
             <UserAvatar width={50} height={50} username={user.username} />
@@ -448,54 +447,60 @@ const PostEditor = () => {
           <Box
             {...getRootProps()}
             sx={{
-              border: '2px dashed #3f51b5',
-              borderRadius: '8px',
-              padding: '20px',
-              textAlign: 'center',
-              color: isDragActive ? '#3f51b5' : '#cccccc',
-              cursor: 'pointer',
+              border: "2px dashed #3f51b5",
+              borderRadius: "8px",
+              padding: "20px",
+              textAlign: "center",
+              color: isDragActive ? "#3f51b5" : "#cccccc",
+              cursor: "pointer",
               mt: 2,
             }}
           >
             <input {...getInputProps()} />
-            {
-              isDragActive ?
-                <Typography>Drop the files here...</Typography> :
-                <Typography>Drag 'n' drop some media files here, or click to select files</Typography>
-            }
+            {isDragActive ? (
+              <Typography>Drop the files here...</Typography>
+            ) : (
+              <Typography>Drag 'n' drop some media files here, or click to select files</Typography>
+            )}
           </Box>
 
           {/* Existing Media Previews */}
           {formData.mediaPreviews.length > 0 && (
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
               <Stack direction="row" spacing={2}>
                 {formData.mediaPreviews.map((media, index) => (
-                  <Box key={index} sx={{ position: 'relative', maxWidth: '100%', maxHeight: '300px', mb: 2 }}>
+                  <Box
+                    key={index}
+                    sx={{ position: "relative", maxWidth: "100%", maxHeight: "300px", mb: 2 }}
+                  >
                     {/* Display image preview */}
-                    {media.type === 'image' && (
+                    {media.type === "image" && (
                       <img
                         src={media.previewUrl}
                         alt="Preview"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
                       />
                     )}
                     {/* Display video preview */}
-                    {media.type === 'video' && (
-                      <video controls style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}>
+                    {media.type === "video" && (
+                      <video
+                        controls
+                        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
+                      >
                         <source src={media.previewUrl} />
                         Your browser does not support the video tag.
                       </video>
                     )}
                     {/* Display audio preview */}
-                    {media.type === 'audio' && (
-                      <audio controls style={{ width: '100%', borderRadius: '8px' }}>
+                    {media.type === "audio" && (
+                      <audio controls style={{ width: "100%", borderRadius: "8px" }}>
                         <source src={media.previewUrl} />
                         Your browser does not support the audio tag.
                       </audio>
                     )}
                     {/* Button to remove media */}
                     <IconButton
-                      sx={{ position: 'absolute', top: 8, right: 8, color: 'white' }}
+                      sx={{ position: "absolute", top: 8, right: 8, color: "white" }}
                       onClick={() => handleRemoveMedia(index)}
                     >
                       <CloseIcon />
@@ -523,23 +528,23 @@ const PostEditor = () => {
               accept="image/*,video/*,audio/*"
               multiple
               hidden
-              onChange={handleMediaChange}
+              onChange={(e) => onDrop(Array.from(e.target.files))}
             />
           </Button>
 
           {/* Display Upload Progress */}
           {loading && (
-            <Box sx={{ width: '100%', mt: 2, position: 'relative' }}>
+            <Box sx={{ width: "100%", mt: 2, position: "relative" }}>
               <LinearProgress
                 variant="determinate"
                 value={uploadProgress}
                 sx={{
-                  height: '8px',
-                  borderRadius: '4px',
-                  backgroundColor: '#f5f5f5',
-                  '& .MuiLinearProgress-bar': {
-                    borderRadius: '4px',
-                    backgroundColor: '#3f51b5',
+                  height: "8px",
+                  borderRadius: "4px",
+                  backgroundColor: "#f5f5f5",
+                  "& .MuiLinearProgress-bar": {
+                    borderRadius: "4px",
+                    backgroundColor: "#3f51b5",
                   },
                 }}
               />
@@ -547,11 +552,11 @@ const PostEditor = () => {
                 variant="body2"
                 color="textSecondary"
                 sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  fontWeight: 'bold',
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  fontWeight: "bold",
                 }}
               >
                 {`${uploadProgress}%`}
@@ -561,11 +566,11 @@ const PostEditor = () => {
                   variant="body2"
                   color="success.main"
                   sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    fontWeight: 'bold',
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontWeight: "bold",
                     mt: 2,
                   }}
                 >
@@ -596,7 +601,7 @@ const PostEditor = () => {
       <Snackbar
         open={draftSaved}
         message="Draft autosaved"
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       />
     </Card>
   );
