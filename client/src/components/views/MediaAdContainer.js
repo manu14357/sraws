@@ -28,10 +28,10 @@ const adsData = [
     content:
       "🚀 Take your business online with a professional, modern website for just ₹1499! 🌐 Get a fully customized, responsive, and SEO-friendly website tailored to your needs. Limited-time offer! ✅ Don't miss out – contact us today to get started and watch your business grow! 📈",
     profileImageUrl:
-      "https://media.sraws.com/media/MRCITSOFT%20INNOVATIONS%20(4)_66d3df6dd88c1.png",
+      "https://firebasestorage.googleapis.com/v0/b/chatrm-5d020.appspot.com/o/media%2FMrcitsoft-Logo.png?alt=media&token=f0076fdf-6326-4610-90b4-bad85db7fcef",
     media: {
       type: "image",
-      url: "https://media.sraws.com/media/manu_1226/White-Purple-Blue-Modern-Website-Development-Facebook-Post_66f92a8badd3f.png",
+      url: "https://firebasestorage.googleapis.com/v0/b/chatrm-5d020.appspot.com/o/media%2FMrcitsoft-marketing-poster.png?alt=media&token=23d9a103-ec9c-4143-a24b-d0a0820d2098",
     },
     websiteUrl: "https://www.mrcitsoft.com",
     contactInfo: {

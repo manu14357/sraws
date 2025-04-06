@@ -24,7 +24,7 @@ const adsData = [
     company: "Mrcitsoft Innovations Pvt. Ltd",
     title: "Empowering Your Digital Future",
     content: "Unleash the power of innovation with our cutting-edge solutions designed to elevate your business to new heights.",
-    imageUrl: "https://media.sraws.com/media/MRCITSOFT INNOVATIONS (4)_66d3df6dd88c1.png",
+    imageUrl: "https://firebasestorage.googleapis.com/v0/b/chatrm-5d020.appspot.com/o/media%2FMrcitsoft-Logo.png?alt=media&token=f0076fdf-6326-4610-90b4-bad85db7fcef",
     websiteUrl: "https://www.mrcitsoft.com",
     contactInfo: {
       name: "",
