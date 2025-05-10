@@ -1,0 +1,39 @@
+nano 213.210.37.171.conf
+
+server {
+    listen 80;
+    root /root/sraws/client/build;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+
+ln -s ../sites-available/213.210.37.171.conf
+
+cp 213.210.37.171.conf sraws.com.conf
+
+nano sraws.com.conf
+
+server {
+    listen 80;
+    server_name sraws.com www.sraws.com;
+    root /root/sraws/client/build;
+
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    error_page 404 /index.html;
+}
+
+
+ln -s ../sites-available/sraws.com.conf
+
+ln -s ../sites-available/api.sraws.com.conf
+
+sudo certbot --nginx -d sraws.com -d www.sraws.com
+
+sudo certbot --nginx -d api.sraws.com -d www.api.sraws.com

@@ -286,3 +286,103 @@ cron.schedule('0 0 * * *', () => {
     .then(console.log)
     .catch(console.error);
 });
+
+
+const axios = require('axios'); // Make sure to install axios if not already present
+
+// NVIDIA AI API endpoint
+const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY;
+
+const cheerio = require('cheerio');
+
+app.post('/api/analyze-url', async (req, res) => {
+  try {
+    const { url } = req.body;
+    if (!url) {
+      console.log('Missing URL in request');
+      return res.status(400).json({ error: 'URL is required' });
+    }
+
+    console.log('Sending request to NVIDIA API for URL:', url);
+    const response = await axios.post(
+      'https://integrate.api.nvidia.com/v1/chat/completions',
+      {
+        model: "nv-mistralai/mistral-nemo-12b-instruct",
+        messages: [{
+          role: "user",
+          content: `
+            Analyze the content from this URL: ${url}
+            Extract key information to create an incident report with:
+            1. A concise title (under 80 characters)
+            2. Detailed description of the incident (at least 8000 characters)
+            3. Location details (country, state, city, area if available)
+            4. Any other relevant details
+            
+            Format your response as JSON with these fields:
+            {
+              "title": "",
+              "content": "",
+              "location": {
+                "country": "",
+                "state": "",
+                "city": "",
+                "area": ""
+              },
+              "confidenceScores": {
+                "title": 0.0,
+                "content": 0.0,
+                "location": 0.0
+              },
+              "source": "${url}"
+            }
+          `
+        }],
+        temperature: 0.2,
+        top_p: 0.7,
+        max_tokens: 5048, // Increased to allow longer content
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${NVIDIA_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('NVIDIA API response:', response.data);
+    let result;
+    try {
+      result = JSON.parse(response.data.choices[0].message.content);
+      // Validate content length
+      if (result.content.length > 8000) {
+        console.warn('Content length is more than 800 characters:', result.content.length);
+        
+        result.confidenceScores.content = Math.max(0.5, result.confidenceScores.content - 0.2);
+      }
+    } catch (e) {
+      console.error('JSON parsing error:', e);
+      // Fallback response
+      result = {
+        title: `Incident Report from ${new URL(url).hostname}`,
+        content: `Report generated from content at ${url}. Limited information was available to create a detailed incident report. Please check the source URL or try another link to obtain more comprehensive details about the incident.`,
+        location: {
+          country: "",
+          state: "",
+          city: "",
+          area: ""
+        },
+        confidenceScores: { title: 0.8, content: 0.7, location: 0.6 },
+        source: url
+      };
+    }
+
+    console.log('Sending response:', result);
+    res.json(result);
+  } catch (error) {
+    console.error('NVIDIA API error:', error.response?.data || error.message);
+    res.status(500).json({
+      error: 'Failed to process URL with AI',
+      details: error.response?.data || error.message
+    });
+  }
+});
