@@ -60,7 +60,7 @@ const Footer = () => {
         <Divider sx={{ my: 2, borderColor: '#e0e0e0' }} />
         
         <Typography variant="body2" color="text.primary" sx={{ mb: 2 }}>
-          Contact us: <Link href="mailto:info@team.sraws.com" color="inherit" sx={{ textDecoration: 'none', cursor: 'pointer' }}>info@team.sraws.com</Link>
+          Contact us: <Link href="mailto:sraws1226@gmail.com" color="inherit" sx={{ textDecoration: 'none', cursor: 'pointer' }}>sraws1226@gmail.com</Link>
         </Typography>
         <Typography variant="caption" color="text.primary">
           &copy; {new Date().getFullYear()} Sraws. All rights reserved.

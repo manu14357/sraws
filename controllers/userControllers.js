@@ -44,7 +44,7 @@ const sendWelcomeEmail = async (email, username) => {
 
     // Send mail with defined transport object
     let info = await transporter.sendMail({
-      from: '"Sraws Team" <info@team.sraws.com>',
+      from: '"Sraws Team" <sraws1226@gmail.com>',
       to: email,
       subject: 'Welcome to Sraws!',
       html: generateWelcomeEmail(username)
@@ -409,7 +409,7 @@ const sendPasswordResetEmail = async (req, res) => {
 
     // Create the email content
     const mailOptions = {
-      from: '"Sraws" <support@team.sraws.com>',
+      from: '"Sraws" <sraws1226@gmail.com>',
       to: email,
       subject: 'Password Reset Request',
       html: `

@@ -246,7 +246,7 @@ const AdContainer = () => {
                 Interested in advertising with us? Contact us at:
               </Typography>
               <Typography variant="body1" sx={{ mt: 2 }}>
-                Email: ads@sraws.com
+                Email: sraws1226@gmail.com
               </Typography>
             </Box>
           )}
