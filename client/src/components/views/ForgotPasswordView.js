@@ -26,7 +26,7 @@ const ForgotPasswordView = () => {
       return;
     }
 
-    const response = await fetch("http://localhost:4000/api/users/forgot-password", {
+    const response = await fetch("https://api.sraws.com/api/users/forgot-password", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -35,9 +35,7 @@ const { generateWelcomeEmail } = require('../WELCOM/emailTemplates');
 const sendWelcomeEmail = async (email, username) => {
   try {
     let transporter = nodemailer.createTransport({
-      host: 'smtp.hostinger.com',
-      port: 465,
-      secure: true, // use TLS
+      service: 'gmail',
       auth: {
         user: process.env.info_team,
         pass: process.env.info_password
@@ -402,9 +400,7 @@ const sendPasswordResetEmail = async (req, res) => {
 
     // Set up your email transporter with Hostinger's SMTP
     const transporter = nodemailer.createTransport({
-      host: 'smtp.hostinger.com',
-      port: 465,
-      secure: true, // Use SSL
+      service: 'gmail',
       auth: {
         user: process.env.support_team,
         pass: process.env.support_password

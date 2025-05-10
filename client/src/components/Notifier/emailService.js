@@ -1,3 +1,4 @@
+require('dotenv').config();
 const nodemailer = require('nodemailer');
 const moment = require('moment'); // For handling dates
 
@@ -10,14 +11,12 @@ const emailAddresses = [
     process.env.notifications_r261205
 ];
 
-// Password for all emails
+// Password for Gmail accounts
 const emailPassword = process.env.notifications_Password;
 
-// Create a transporter object using Hostinger's SMTP transport
+// Create a transporter object using Gmail's SMTP transport
 const transporter = nodemailer.createTransport({
-    host: 'smtp.hostinger.com', // SMTP server host
-    port: 465, // SMTP server port
-    secure: true, // Use SSL/TLS
+    service: 'gmail',
     auth: {
         user: emailAddresses[0], // Use the first email for authentication
         pass: emailPassword
@@ -57,6 +56,9 @@ const sendEmail = async (to, subject, htmlContent) => {
             throw new Error('All email addresses have reached the daily limit');
         }
 
+        // Update transporter with the current email for sending
+        transporter.options.auth.user = emailToUse;
+
         await transporter.sendMail({
             from: `"Sraws Notification Center" <${emailToUse}>`,
             to,
@@ -64,12 +66,10 @@ const sendEmail = async (to, subject, htmlContent) => {
             html: htmlContent
         });
 
-        console.log('Email sent successfully from', emailToUse);
+        console.log(`Email sent successfully from ${emailToUse}`);
     } catch (error) {
         console.error('Error sending email:', error);
     }
 };
-
-
 
 module.exports = sendEmail;
